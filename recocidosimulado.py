@@ -6,6 +6,9 @@ import math
 df = pd.read_csv("Matriz20.csv") #cargamos .csv
 df = df.drop(df.columns[[0]], axis='columns') # borramos primera columna del .csv 
 
+def funcion():
+
+    return 
 my_plot = df.plot("0", "1", kind="scatter")
 
 df_i = df.drop(df.columns[[1]], axis='columns')
