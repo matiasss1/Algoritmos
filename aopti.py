@@ -1,60 +1,69 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jul  5 19:41:11 2022
-
-@author: holas
-"""
-
-from numpy import asarray, exp
-from numpy.random import randn, rand, seed
+# simulated annealing search of a one-dimensional objective function
+from numpy import asarray
+from numpy import exp
+from numpy.random import randn
+from numpy.random import rand
+from numpy.random import seed
 from matplotlib import pyplot
-
-# Defino la funcion objetivo
-def funcion(step):
-    return step[0] ** 2.0
-
-def sa(funcion_o, area, iterations, step_size, temperature): #son los parametros que utilizaremos
-    punto_inicio = area[:, 0] + rand( len( area ) ) * ( area[:, 1] - area[:, 0] ) #punto inicio 
-    print("aaa",punto_inicio)
-    #print('punto inicio pr',punto_inicio)
-    puntoi_eval = funcion_o(punto_inicio) #evaluo el punto inicio
-    print("aaaaaaaaaaaaaaaa",puntoi_eval)
-    #print("punto incio evaluado:",puntoi_eval)
-    puntoi = punto_inicio  #asignamos las nuevas soluciones
-    punto_ie = puntoi_eval #aqui igual
-    outputs = [] 
-    for i in range(iterations):
-        paso = puntoi + randn( len( area ) ) * step_size #primer paso de mia  
-        paso_e = funcion_o(paso) 
-        if paso_e < puntoi_eval: #es menos al punto de inicio evaluado
-            punto_inicio = paso 
-            puntoi_eval = paso_e
-            outputs.append(puntoi_eval) #guardamos los puntos aceptados 
-            print('criterio de aceptacion =', mac," ",'numero de iteracion = ',i," ", 'mejor que= ',punto_inicio," " ,'nuevo mejor =', puntoi_eval)
-        difference = paso_e - punto_ie #guardamos la diferencia
-        t = temperature / float(i + 1) 
-        mac = exp(-difference / t) #calculamos el criterio de aceptacion
-        if difference < 0 or rand() < mac: #chequea si el punto ya se a aceptado
-            puntoi = paso  
-            punto_ie = paso_e
-    return [punto_inicio, puntoi_eval, outputs]
-
-seed(1) #El seed()método se utiliza para inicializar el generador de números aleatorios.
-Area = asarray([[-6.0, 6.0]]) #definimos un area de busqueda
-temp = 12 #temperatura incial
-iteraciones = 1200 #numero total de iteraciones
-T_paso = 0.1 #tamaño del paso
+import math
+ 
+# objective function
+def objective(x):
+	return x[0]**2
+ 
+# simulated annealing algorithm
+def simulated_annealing(objective, bounds, n_iterations, step_size, temp):
+	# generate an initial point
+	best = bounds[:, 0] + rand(len(bounds)) * (bounds[:, 1] - bounds[:, 0])
+	print("a",best)
+	# evaluate the initial point
+	best_eval = objective(best)
+	print("best eval", best_eval)
+	# current working solution
+	curr, curr_eval = best, best_eval
+	scores = list()
+	# run the algorithm
+	for i in range(n_iterations):
+		# take a step
+		candidate = curr + randn(len(bounds)) * step_size
+		# evaluate candidate point
+		candidate_eval = objective(candidate)
+		# check for new best solution
+		if candidate_eval < best_eval:
+			# store new best point
+			best, best_eval = candidate, candidate_eval
+			# keep track of scores
+			scores.append(best_eval)
+			# report progress
+			print('>%d f(%s) = %.5f' % (i, best, best_eval))
+		# difference between candidate and current point evaluation
+		diff = candidate_eval - curr_eval
+		# calculate temperature for current epoch
+		t = temp / float(i + 1)
+		# calculate metropolis acceptance criterion
+		metropolis = exp(-diff / t)
+		# check if we should keep the new point
+		if diff < 0 or rand() < metropolis:
+			# store the new current point
+			curr, curr_eval = candidate, candidate_eval
+	return [best, best_eval, scores]
+ 
+# seed the pseudorandom number generator
+seed(1)
+# define range for input
+bounds = asarray([[-5.0, 5.0]])
+# define the total iterations
+n_iterations = 1000
+# define the maximum step size
+step_size = 0.1
+# initial temperature
+temp = 10
 # perform the simulated annealing search
-start_point, output, outputs = sa(funcion, Area, iteraciones, T_paso, temp) #retorna los 3 parametros 
-#Graficamos
-pyplot.plot(outputs, 'ro-')
-pyplot.xlabel('Improvement Value')
-pyplot.ylabel('Evaluation of Objective Function')
+best, score, scores = simulated_annealing(objective, bounds, n_iterations, step_size, temp)
+print('Done!')
+print('f(%s) = %f' % (best, score))
+# line plot of best scores
+pyplot.plot(scores, '.-')
+pyplot.xlabel('Improvement Number')
+pyplot.ylabel('Evaluation f(x)')
 pyplot.show()
-
-print('----------------------------------------------------------------')
-print(start_point) 
-print('----------------------------------------------------------------')
-print(output)
-print('----------------------------------------------------------------')
-print(outputs)
