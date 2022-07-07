@@ -14,9 +14,11 @@ def funcion(step):
     return step[0] ** 2.0
 
 def sa(funcion_o, area, iterations, step_size, temperature): #son los parametros que utilizaremos
-    punto_inicio = area[:, 0] + rand( len( area ) ) * ( area[:, 1] - area[:, 0] ) #punto inicio
+    punto_inicio = area[:, 0] + rand( len( area ) ) * ( area[:, 1] - area[:, 0] ) #punto inicio 
+    print("aaa",punto_inicio)
     #print('punto inicio pr',punto_inicio)
     puntoi_eval = funcion_o(punto_inicio) #evaluo el punto inicio
+    print("aaaaaaaaaaaaaaaa",puntoi_eval)
     #print("punto incio evaluado:",puntoi_eval)
     puntoi = punto_inicio  #asignamos las nuevas soluciones
     punto_ie = puntoi_eval #aqui igual
