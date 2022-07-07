@@ -15,10 +15,8 @@ def objective(x):
 def simulated_annealing(objective, bounds, n_iterations, step_size, temp):
 	# generate an initial point
 	best = bounds[:, 0] + rand(len(bounds)) * (bounds[:, 1] - bounds[:, 0])
-	print("a",best)
 	# evaluate the initial point
 	best_eval = objective(best)
-	print("best eval", best_eval)
 	# current working solution
 	curr, curr_eval = best, best_eval
 	scores = list()
