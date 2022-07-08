@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import math
 from sympy import *
 from scipy.spatial import distance
+
 df = pd.read_csv("Matriz20.csv") #cargamos .csv
 df = df.drop(df.columns[[0]], axis='columns') # borramos primera columna del .csv 
 
@@ -23,47 +24,37 @@ def funcino_objetivo(i, j, d):
     return (H)
 
 def dg(area,temperatura,iteraciones,tam_paso):
-    p1 = ((area[:, 0] + rand(len(area)) * (area[:, 1] - area[:, 0])),(area[:, 0] + rand(len(area)) * (area[:, 1] - area[:, 0])))
-    #(1,2)
-    #print('soy p1:',p1)
-    p2 = ((area[:, 0] + rand(len(area)) * (area[:, 1] - area[:, 0])),(area[:, 0] + rand(len(area)) * (area[:, 1] - area[:, 0])))
-    #(1,2)
-    punto1 = p1[0][0],p1[1][0]
-    punto2 = p2[0][0],p2[1][0]
-    #print("punto1 ",punto1[0])
-    distancia_p12 = funcion_distancia(punto1,punto2)
-    pf = funcino_objetivo(punto1,punto2,distancia_p12)
-    #print("distancia",distancia_p12)
-    #print('soy pf:',pf)
+    punto1 = (x[0][0],x[0][1])
+
     aceptados=[]
-    c=0
     for s in range(iteraciones):
         candidate1 = punto1 + randn(len(area)) * tam_paso #vencidad
         candidate2 = punto2 + randn(len(area)) * tam_paso #vencidad
+        
         #print("punto candidato:",candidate2[1])
         p_candidate1 = [candidate1[0],candidate1[1]]
         p_candidate2 = [candidate2[0],candidate2[1]]
         #print("punto candidato:",p_candidate2[0])
-        candidate_eval = funcino_objetivo(p_candidate1,p_candidate2,funcion_distancia(p_candidate1[0],p_candidate2[0]))
-        c=c+1
+        candidate_eval = funcino_objetivo(p_candidate1,p_candidate2,funcion_distancia(p_candidate1,p_candidate2))
+
         diff = candidate_eval - pf
         t = temperatura / (float(s+1))
         metropolis = exp(-diff / t)
-        if candidate_eval > pf and candidate_eval > 1:
-            candidate1 = punto1
-            candidate2 = punto2
+        if candidate_eval < pf:
+            punto1 = p_candidate1
+            punto2 = p_candidate2
             pf = candidate_eval
             aceptados.append(pf)
         else:
             if rand()<metropolis:
-                candidate1 = punto1
-                candidate2 = punto2
+                punto1 = p_candidate1
+                punto2 = p_candidate2
                 pf = candidate_eval
                 aceptados.append(pf)
         #print("if:",(punto1,punto2),pf,s)
 
     return [aceptados]
-print(dg(area,10,1000,0.1))
+print(dg(area,10000,1000,0.1))
 
 for e in range(len(x)):
     for k in range(len(x)):
